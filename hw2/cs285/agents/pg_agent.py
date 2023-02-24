@@ -98,7 +98,7 @@ class PGAgent(BaseAgent):
                 ## that the predictions have the same mean and standard deviation as
                 ## the current batch of q_values
             mean_val = values_unnormalized.mean(axis=1).reshape(-1, 1)
-            std_val = values_unnormalized.std(axis=1).reshape(-1,1)
+            std_val = values_unnormalized.std(axis=1).reshape(-1, 1)
             values = (values_unnormalized - mean_val) / std_val
 
             if self.gae_lambda is not None:
@@ -119,13 +119,13 @@ class PGAgent(BaseAgent):
                     ## HINT: use terminals to handle edge cases. terminals[i]
                         ## is 1 if the state is the last in its trajectory, and
                         ## 0 otherwise.
-
+                    advantages[i] = rews[i] + self.gamma * values[i+1] - values[i] + self.gamma * self.gae_lambda * advantages[i+1]
                 # remove dummy advantage
                 advantages = advantages[:-1]
 
             else:
                 ## TODO: compute advantage estimates using q_values, and values as baselines
-                advantages = TODO
+                advantages = q_values - values
 
         # Else, just set the advantage to [Q]
         else:
@@ -134,7 +134,9 @@ class PGAgent(BaseAgent):
         # Normalize the resulting advantages to have a mean of zero
         # and a standard deviation of one
         if self.standardize_advantages:
-            advantages = TODO
+            adv_mean = np.mean(advantages)
+            adv_std = np.std(advantages)
+            advantages = (advantages - adv_mean) / adv_std
 
         return advantages
 
@@ -161,7 +163,7 @@ class PGAgent(BaseAgent):
         """
         list_of_discounted_returns = []
         gamma = 1
-        for i in len(rewards):
+        for i in range(len(rewards)):
             list_of_discounted_returns.append(gamma * rewards[i])
             gamma *= self.gamma
         return list_of_discounted_returns
