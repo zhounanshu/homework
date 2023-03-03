@@ -3,6 +3,7 @@ import torch
 import torch.optim as optim
 from torch.nn import utils
 from torch import nn
+import gym
 
 from cs285.infrastructure import pytorch_util as ptu
 
@@ -66,7 +67,8 @@ class DQNCritic(BaseCritic):
         q_t_values = torch.gather(qa_t_values, 1, ac_na.unsqueeze(1)).squeeze(1)
         
         # TODO compute the Q-values from the target network 
-        qa_tp1_values = TODO
+        qa_tp1_values = self.q_net_target(next_ob_no)
+        env = gym.make(self.env_name)
 
         if self.double_q:
             # You must fill this part for Q2 of the Q-learning portion of the homework.

@@ -302,11 +302,26 @@ class RL_Trainer(object):
             train_video_paths: paths which also contain videos for visualization purposes
         """
         # TODO: get this from hw1 or hw2
+        if itr == 0 or initial_expertdata is not None:
+            import joblib
+            paths = joblib.load(initial_expertdata)
+            return paths, 0, None
+        paths, envsteps_this_batch = utils.sample_trajectories(self.env, collect_policy, num_transitions_to_sample, self.params['ep_len'])
+
+        train_video_paths = []
+        if self.logvideo:
+            train_video_paths = utils.sample_n_trajectories(self.env, collect_policy, MAX_NVIDEO, MAX_VIDEO_LEN, True)
 
         return paths, envsteps_this_batch, train_video_paths
 
     def train_agent(self):
         # TODO: get this from hw1 or hw2
+        train_logs = []
+        for i in range(self.params['num_agent_train_steps_per_iter']):
+            ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch = self.agent.sample(self.params['batch_size'])
+            train_log = self.agent.train(ob_batch, ac_batch, re_batch, next_ob_batch, terminal_batch)
+            train_logs.append(train_log)
+        return train_logs
 
     ####################################
     ####################################
@@ -478,3 +493,12 @@ class RL_Trainer(object):
             print('Done logging...\n\n')
 
             self.logger.flush()
+
+    def do_relabel_with_expert(self, expert_policy, paths):
+        print("\nRelabelling collected observations with labels from an expert policy...")
+        # HINT: query the policy (using the get_action function) with paths[i]["observation"]
+        # and replace paths[i]["action"] with these expert labels
+        for path in paths:
+            acs = expert_policy.get_action(path['observation'])
+            path['action'] = acs
+        return paths
