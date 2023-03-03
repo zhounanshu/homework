@@ -145,8 +145,8 @@ class MLPPolicyPG(MLPPolicy):
         self.optimizer.zero_grad()
         ac_dist = self(observations)
         log_probs = ac_dist.log_prob(actions)
-        if not self.discrete:
-            log_probs = log_probs.sum(1)
+        # if not self.discrete:
+        #     log_probs = log_probs.sum(1)
 
         loss = -(log_probs * advantages).sum()
 
