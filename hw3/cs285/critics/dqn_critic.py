@@ -14,6 +14,7 @@ class DQNCritic(BaseCritic):
         super().__init__(**kwargs)
         self.env_name = hparams['env_name']
         self.ob_dim = hparams['ob_dim']
+        self.env =   gym.make(self.env_name) # add
 
         if isinstance(self.ob_dim, int):
             self.input_shape = (self.ob_dim,)
@@ -68,7 +69,6 @@ class DQNCritic(BaseCritic):
         
         # TODO compute the Q-values from the target network 
         qa_tp1_values = self.q_net_target(next_ob_no)
-        env = gym.make(self.env_name)
 
         if self.double_q:
             # You must fill this part for Q2 of the Q-learning portion of the homework.
@@ -76,14 +76,15 @@ class DQNCritic(BaseCritic):
             # is being updated, but the Q-value for this action is obtained from the
             # target Q-network. Please review Lecture 8 for more details,
             # and page 4 of https://arxiv.org/pdf/1509.06461.pdf is also a good reference.
-            TODO
+            qa_tp1_values =  self.q_net(next_ob_no)
+            q_tp1,_ = qa_tp1_values.max(dim=1)
         else:
             q_tp1, _ = qa_tp1_values.max(dim=1)
 
         # TODO compute targets for minimizing Bellman error
         # HINT: as you saw in lecture, this would be:
             #currentReward + self.gamma * qValuesOfNextTimestep * (not terminal)
-        target = TODO
+        target = reward_n + self.gamma * q_tp1
         target = target.detach()
 
         assert q_t_values.shape == target.shape
