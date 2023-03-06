@@ -118,7 +118,7 @@ class MLPPolicy(BasePolicy, nn.Module, metaclass=abc.ABCMeta):
                 batch_mean,
                 scale_tril=batch_scale_tril,
             )
-            return action_distribution
+        return action_distribution
 
 
 #####################################################
@@ -130,7 +130,7 @@ class MLPPolicyAC(MLPPolicy):
         # TODO: update the policy and return the loss
         observations = ptu.from_numpy(observations)
         actions = ptu.from_numpy(actions)
-        advantages = ptu.from_numpy(adv_n)
+        adv_n = ptu.from_numpy(adv_n)
 
         self.optimizer.zero_grad()
         ac_dist = self(observations)

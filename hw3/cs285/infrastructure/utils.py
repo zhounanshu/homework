@@ -56,7 +56,7 @@ def mean_squared_error(a, b):
 
 def sample_trajectory(env, policy, max_path_length, render=False, render_mode=('rgb_array')):
     # TODO: get this from hw1 or hw2
-    ob, info = env.reset()
+    ob = env.reset()
     obs, acs, rews, next_obs, terminals, image_obs = [], [], [], [], [], []
     step = 0
     while True:
@@ -68,7 +68,7 @@ def sample_trajectory(env, policy, max_path_length, render=False, render_mode=('
                 image_obs.append(env.render())
 
         ac = policy.get_action(ob)[0]
-        next_ob, rew, done, _ = env.step(ac, render=render, render_mode=render_mode)
+        next_ob, rew, done, _ = env.step(ac)
 
         obs.append(ob)
         acs.append(ac)

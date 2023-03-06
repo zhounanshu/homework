@@ -302,7 +302,7 @@ class RL_Trainer(object):
             train_video_paths: paths which also contain videos for visualization purposes
         """
         # TODO: get this from hw1 or hw2
-        if itr == 0 or initial_expertdata is not None:
+        if itr == 0 and initial_expertdata is not None:
             import joblib
             paths = joblib.load(initial_expertdata)
             return paths, 0, None
