@@ -76,5 +76,16 @@ class MLPPolicySAC(MLPPolicy):
         ac_dist = self(ptu.from_numpy(obs))
         action = self.ac_dist.rsample() # ??
         log_prob = ac_dist.log_prob(action)
+        q1_value, q2_value = critic(obs, action)
+        actor_loss =  (self.alpha * log_prob.detach() - torch.min(q1_value,  q2_value)).mean()
+        
+        self.optimizer.zero_grad()
+        actor_loss.backward()
+        self.optimizer.step()
 
+        alpha_loss =  (-self.alpha * log_prob - self.target_entropy).detach().mean()
+        self.log_alpha_optimizer.zero_grad()
+        alpha_loss.backward()
+        self.log_alpha_optimizer.step()
+        
         return actor_loss, alpha_loss, self.alpha
