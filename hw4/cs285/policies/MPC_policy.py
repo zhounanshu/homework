@@ -84,8 +84,10 @@ class MPCPolicy(BasePolicy):
         #
         # Then, return the mean predictions across all ensembles.
         # Hint: the return value should be an array of shape (N,)
+        rewards = []
         for model in self.dyn_models: 
-            pass
+            sum_rew = self.calculate_sum_of_rewards(obs, candidate_action_sequences, model)
+            rewards.append(sum_rew)
 
         return TODO
 
