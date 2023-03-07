@@ -56,6 +56,33 @@ def mean_squared_error(a, b):
 
 def sample_trajectory(env, policy, max_path_length, render=False):
 # TODO: get this from previous HW
+    ob = env.reset()
+    obs, acs, rews, next_obs, terminals, image_obs = [], [], [], [], [], []
+    step = 0
+    while True:
+
+        if render:
+            if hasattr(env, 'sim'):
+                image_obs.append(env.sim.render(camera_name='track', height=500, width=500)[::-1])
+            else:
+                image_obs.append(env.render())
+
+        ac = policy.get_action(ob)[0]
+        next_ob, rew, done, _ = env.step(ac)
+
+        obs.append(ob)
+        acs.append(ac)
+        rews.append(rew)
+        next_obs.append(next_ob)
+        step += 1
+        ob = next_ob
+
+        terminal = (done or step==max_path_length)
+        terminals.append(terminal)
+        if terminal:
+            break
+
+    return Path(obs, image_obs, acs, rews, next_obs, terminals)
 
 def sample_trajectories(env, policy, min_timesteps_per_batch, max_path_length, render=False):
     """
@@ -63,7 +90,12 @@ def sample_trajectories(env, policy, min_timesteps_per_batch, max_path_length, r
         until we have collected min_timesteps_per_batch steps
     """
     # TODO: get this from previous HW
-
+    timesteps_this_batch = 0
+    paths = []
+    while timesteps_this_batch < min_timesteps_per_batch:
+        path = sample_trajectory(env, policy, max_path_length, render )
+        timesteps_this_batch += 1
+        paths.append(path)
     return paths, timesteps_this_batch
 
 def sample_n_trajectories(env, policy, ntraj, max_path_length, render=False):
@@ -71,7 +103,10 @@ def sample_n_trajectories(env, policy, ntraj, max_path_length, render=False):
         Collect ntraj rollouts using policy
     """
     # TODO: get this from Piazza
-
+    paths = []
+    for i in range(ntraj):
+        path = sample_trajectory(env, policy, max_path_length, render )
+        paths.append(path)
     return paths
 
 ############################################

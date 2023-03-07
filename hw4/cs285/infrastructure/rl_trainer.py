@@ -211,8 +211,12 @@ class RL_Trainer(object):
 
     def train_agent(self):
         # TODO: get this from previous HW
-        for _ in range()
-        pass
+        logs = []
+        for _ in range(self.params['num_agent_train_steps_per_iter']):
+            obs,  acs, rews,  next_obs, terminals = self.agent.sample(self.params['batch_size'])
+            log = self.agent.train(obs,  acs, rews,  next_obs, terminals )
+            logs.append(log)
+        return logs
 
     def train_sac_agent(self):
         # TODO: Train the SAC component of the MBPO agent.
