@@ -224,7 +224,9 @@ class RL_Trainer(object):
         # 1) sample a batch of data of size self.sac_params['train_batch_size'] with self.agent.sample_sac
         # 2) train the SAC agent self.agent.train_sac
         # HINT: This will look similar to train_agent above.
-        pass
+        for _ in range(self.sac_params['num_agent_train_steps_per_iter']):
+            obs, acs, rews, next_obs, terminals = self.agent.sample_sac(self.sac_params['train_batch_size'])
+            self.agent.train(obs, acs, rews, next_obs, terminals)
 
     ####################################
     ####################################

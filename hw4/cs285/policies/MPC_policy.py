@@ -56,10 +56,10 @@ class MPCPolicy(BasePolicy):
             random_action_sequences =  np.random.randint(self.low, self.high, size=(num_sequences, horizon, self.ac_dim) )
             return random_action_sequences
         elif self.sample_strategy == 'cem':
-            # TODO(Q5): Implement action selection using CEM.
+            # (Q5): Implement action selection using CEM.
             # Begin with randomly selected actions, then refine the sampling distribution
             # iteratively as described in Section 3.3, "Iterative Random-Shooting with Refinement" of
-            # https://arxiv.org/pdf/1909.11652.pdf 
+            # https://arxiv.org/pdf/1909.11652.pdf
             for i in range(self.cem_iterations):
                 # - Sample candidate sequences from a Gaussian with the current 
                 #   elite mean and variance
@@ -69,10 +69,15 @@ class MPCPolicy(BasePolicy):
                 #     (Hint: what existing function can we use to compute rewards for
                 #      our candidate sequences in order to rank them?)
                 # - Update the elite mean and variance
-                pass
+                if i == 0:
+                    actions = np.random.randint(self.low, self.high, size=(num_sequences, horizon, self.ac_dim))
+                else:
+                    mean = actions.mean(axis=0)
+                    std = actions.std(axis=0)
+                    actions = np.random.normal(mean, std, size=(num_sequences, horizon, self.ac_dim))
 
-            # TODO(Q5): Set `cem_action` to the appropriate action chosen by CEM
-            cem_action = None
+            # (Q5): Set `cem_action` to the appropriate action chosen by CEM
+            cem_action = actions
 
             return cem_action[None]
         else:
