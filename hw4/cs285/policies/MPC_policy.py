@@ -88,7 +88,7 @@ class MPCPolicy(BasePolicy):
         for model in self.dyn_models: 
             sum_rew = self.calculate_sum_of_rewards(obs, candidate_action_sequences, model)
             rewards.append(sum_rew)
-        rewards = np.array(rewards).mean(axis=1)
+        rewards = np.array(rewards).mean(axis=0)
         return rewards
 
     def get_action(self, obs):
@@ -106,8 +106,8 @@ class MPCPolicy(BasePolicy):
             predicted_rewards = self.evaluate_candidate_sequences(candidate_action_sequences, obs)
 
             # pick the action sequence and return the 1st element of that sequence
-            best_action_sequence =  candidate_action_sequences[predicted_rewards.argmax()]# (Q2)
-            action_to_take = best_action_sequence[0]  # TODO (Q2)
+            best_action_sequence = candidate_action_sequences[predicted_rewards.argmax()]# (Q2)
+            action_to_take = best_action_sequence[0]  # (Q2) ???
             return action_to_take[None]  # Unsqueeze the first index
 
     def calculate_sum_of_rewards(self, obs, candidate_action_sequences, model):
@@ -137,7 +137,9 @@ class MPCPolicy(BasePolicy):
         sum_of_rewards = []
         for i in range(len(candidate_action_sequences)):
             acs = candidate_action_sequences[i]
-            predicted_obs  =  model.get_prediction(obs, acs,  self.data_statistics )
-            sum_of_reward = self.env.get_reward(predicted_obs,  acs)
-            sum_of_rewards.append(sum_of_reward)
+            obs_n = np.expand_dims(obs, 0).repeat(acs.shape[0], 0)
+            predicted_obs = model.get_prediction(obs_n, acs,  self.data_statistics)
+            sum_of_reward, _ = self.env.get_reward(predicted_obs,  acs)
+            sum_of_rewards.append(sum_of_reward.sum())
+        sum_of_rewards = np.array(sum_of_rewards)
         return sum_of_rewards

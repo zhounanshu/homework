@@ -58,23 +58,23 @@ def main():
 
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--env_name', type=str, default='cheetah-cs285-v0') #reacher-cs285-v0, ant-cs285-v0, cheetah-cs285-v0, obstacles-cs285-v0
+    parser.add_argument('--env_name', type=str, default='obstacles-cs285-v0') #reacher-cs285-v0, ant-cs285-v0, cheetah-cs285-v0, obstacles-cs285-v0
     parser.add_argument('--ep_len', type=int, default=200)
-    parser.add_argument('--exp_name', type=str, default='q1_cheetah_n500_arch1x32')
+    parser.add_argument('--exp_name', type=str, default='q2_obstacles_singleiteration')
     parser.add_argument('--n_iter', '-n', type=int, default=1)
 
     parser.add_argument('--ensemble_size', '-e', type=int, default=3)
     parser.add_argument('--mpc_horizon', type=int, default=10)
-    parser.add_argument('--mpc_num_action_sequences', type=int, default=1000)
+    parser.add_argument('--mpc_num_action_sequences', type=int, default=100)
     parser.add_argument('--mpc_action_sampling_strategy', type=str, default='random')
     parser.add_argument('--cem_iterations', type=int, default=4)
     parser.add_argument('--cem_num_elites', type=int, default=5)
     parser.add_argument('--cem_alpha', type=float, default=1)
 
     parser.add_argument('--add_sl_noise', '-noise', action='store_true', default=True)
-    parser.add_argument('--num_agent_train_steps_per_iter', type=int, default=100)
-    parser.add_argument('--batch_size_initial', type=int, default=200) #(random) steps collected on 1st iteration (put into replay buffer)
-    parser.add_argument('--batch_size', '-b', type=int, default=8000) #steps collected per train iteration (put into replay buffer)
+    parser.add_argument('--num_agent_train_steps_per_iter', type=int, default=20)
+    parser.add_argument('--batch_size_initial', type=int, default=500) #(random) steps collected on 1st iteration (put into replay buffer)
+    parser.add_argument('--batch_size', '-b', type=int, default=100) #steps collected per train iteration (put into replay buffer)
     parser.add_argument('--train_batch_size', '-tb', type=int, default=512) ##steps used per gradient step (used for training)
     parser.add_argument('--eval_batch_size', '-eb', type=int, default=400) #steps collected per eval iteration
 
@@ -85,7 +85,7 @@ def main():
     parser.add_argument('--seed', type=int, default=1)
     parser.add_argument('--no_gpu', '-ngpu', action='store_true')
     parser.add_argument('--which_gpu', '-gpu_id', default=0)
-    parser.add_argument('--video_log_freq', type=int, default=-1) #-1 to disable
+    parser.add_argument('--video_log_freq', type=int, default=1) #-1 to disable
     parser.add_argument('--scalar_log_freq', type=int, default=-1) #-1 to disable
     parser.add_argument('--save_params', action='store_true')
     args = parser.parse_args()
